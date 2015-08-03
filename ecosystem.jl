@@ -6,44 +6,44 @@ Z dimension characteristics by layer and the values representing different optio
 
 
 1:
-type of block.
+ENVIRONMENT - type of block.
 	0 - blank space
 	1 - obstacle
 	2 - creature
 2:
-ambient energy available at block.
+ENVIRONMENT - ambient energy available at block.
 	Range: 0 to 255
 	Desc: the energy content of the block. Energy is the fundamental "currency" of this ecosystem and determines the degree of many other attributes
 3:
-movement speed.
+ATTRIBUTE - movement speed.
 	Range: 0 to Inf
-	Desc: energy to move scales logarithmically with energy 
+	Desc: How quickly the creature can move. The cost of movement scales logarithmically with energy 
 4: 
-mating similarity requirement
+ATTRIBUTE - mating similarity requirement
 	Range: 0 to Inf
-	Desc: how similar a creature must be to another creature in order to mate. Scales logarithmically with energy
+	Desc: How similar a creature must be to another creature in order to mate. Similarity is counted as some kind of integer difference between creatures. Cost to mate scales with this number (larger number, more cost to mate)
 5: 
-attack capability.
+ATTRIBUTE - attack capability.
 	Range: 0 to Inf
-	Desc: the level of attack the creature can output. Scales logarthmically with energy
+	Desc: the level of attack the creature can output. Cost to attack scales logarithmically
 6:
-vision range.
+ATTRIBUTE - attack similarity
+	Range: 0 to Inf
+	Desc: how different another creature must be in order to merit being attacked. A "0" means this creature will attack any other creature, including creatures that are the exact same.
+7: 
+ATTRIBUTE - vision range.
 	Range: 0 to Inf
 	Desc: how many cells out a creature can see it's environment. 
-7: 
-8: 
-9: 
-10: 
-11: 
-12: 
-13: 
-14: 
-15: 
-16: 
-17: 
-18: 
-19: 
-20: 
+8:
+ATTRIBUTE - 
+
+
+
+Creatures will be colored using rgb values that represent the 3 most essential characteristics that determine its behavior:
+
+	Red - FEAR : how much the creature wants to stay alive
+	Green - GREED : how much the creature wants energy
+	Blue - SOCIAL : how much the creature wants to be near similar creatures
 =#
 
 using HttpServer
@@ -52,16 +52,17 @@ using WebSockets
 #=
 GLOBALS
 =#
-width = 360;
-height = 180;
-ecosystem = initialize_grid(width, height, 6);
+WIDTH = 360;
+HEIGHT = 180;
+MUTATION_RATE = 0.01;
+ecosystem = initialize_grid(width, height, 8);
+
 
 wsh = WebSocketHandler() do req, client
 	while true
-		# cells = string(int(round(ambient_energy(360,180, [.5, .2, .4, .3], [2, 4, 8, 16]))));
-		cells = string(int());
-		write(client, cells)
-		# sleep(0.01)
+		# put all cell color values into a large string which will be parsed by the javascript client-side
+		visual = join(ecosystem_display(), ',');
+		write(client, visual)
 	end
 end
 
@@ -123,11 +124,19 @@ function sin_noise(x::Int64, y::Int64, freq::Int64)
 	return (sin(2 * pi * freq * noise_map + phase) + 1) / 2;
 end
 
+#=
+Generate simple random noise in the range of 0 to 255
+=#
 function simple_noise(x::Int64, y::Int64)
 	map = int(rand(x,y) * 255);
 end
 
+#=
+Generate an array of strings that represent the hex values of the ecosystem cells
+=#
+function ecosystem_display()
 
+end
 
 # Run the server
 server = Server(wsh)

@@ -46,10 +46,10 @@ function openSocket(){
     };
 
     webSocket.onmessage = function(event){
-        data = event.data.split(' ');
-        data[0] = data[0].replace(/[[\]]/g,'');
-        lastIndex = data.length - 1;
-        data[lastIndex] = data[lastIndex].replace(/[[\]]/g,'');
+        data = event.data.split(',');
+        // data[0] = data[0].replace(/[[\]]/g,'');
+        // lastIndex = data.length - 1;
+        // data[lastIndex] = data[lastIndex].replace(/[[\]]/g,'');
 
         cellDataQueue.push(data);
         msgCount = msgCount + 1;
@@ -77,12 +77,6 @@ function writeResponse(text){
     messages.innerHTML = text;
 }
 
-/**
- * Sets the update interval of the draw function
- */
-// setInterval(function() {
-//     draw();
-// }, 1000/FPS);
 
 
 var animFrame = window.requestAnimationFrame ||
@@ -106,7 +100,7 @@ var draw = function() {
             
             var index = x + y * xCount;
 
-            fill = 'rgb('+ cellData[index] + ',' + cellData[index] +',' + cellData[index] + ')';
+            fill = cellData[index];
             drawCell(x, y, fill);
             
         }

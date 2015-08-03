@@ -4,7 +4,7 @@ using WebSockets
 
 wsh = WebSocketHandler() do req, client
 	while true
-		cells = string(int(round(rand(360,180) * 255)));
+		cells = join(randColorField(360,180), ',');
 		write(client, cells)
 
 	end
@@ -32,7 +32,6 @@ function randColorField(x::Int64, y::Int64)
 	return map
 end
 
-print(randColorField(10,10))
 
 server = Server(wsh)
 run(server, 8080)
