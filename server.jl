@@ -2,15 +2,6 @@ using HttpServer
 using WebSockets
 
 
-wsh = WebSocketHandler() do req, client
-	while true
-		cells = join(randColorField(360,180), ',');
-		write(client, cells)
-
-	end
-end
-
-
 function randColor()
 	r = int(rand() * 255);
 	g = int(rand() * 255);
@@ -31,6 +22,24 @@ function randColorField(x::Int64, y::Int64)
 	end
 	return map
 end
+
+# y = randColorField(5,5);
+
+# x = join(y, ',');
+
+# println(y);
+# println(x);
+
+wsh = WebSocketHandler() do req, client
+	while true
+		cells = join(randColorField(100,100), ',');
+		sleep(1);
+		write(client, cells);
+	end
+end
+
+
+
 
 
 server = Server(wsh)

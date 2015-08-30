@@ -46,3 +46,16 @@ Decision factors vs. attributes:
 Attributes: These determine what the creature can do (attack, speed, etc)
 
 Decision factors: These determine how the creature will act (aggression, mating, etc)
+
+
+8/14
+----
+
+So after creating a way too large file containing a lot of different functions, here is how I will break it down:
+
+Loop => runs the main loop of the ecosystem
+
+8/18
+----
+
+Some progress, but more roadblocks. Blah.
