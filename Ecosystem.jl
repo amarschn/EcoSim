@@ -70,7 +70,36 @@ function simple_noise(rows::Int, columns::Int, range::Int)
 	map = int(rand(rows,columns) * range);
 end
 
+"""
+Generate more "natural" noise.
+http://flafla2.github.io/2014/08/09/perlinnoise.html
 
+Params:
+	step: the "movement" in time between the last calculation
+	min: the minimum ambient energy value
+	max: the maximum ambient energy value
+"""
+function generate_ambient_energy(step::Float64, min::Int, max:Int)
+	map = int(zeros(HEIGHT, WIDTH));
+
+	# Loop through all 
+	for r = 1:HEIGHT
+		for c = 1:WIDTH
+			map[r,c] = perlin()
+		end
+	end
+
+	return map;
+
+end
+
+"""
+Perlin noise implementation
+"""
+function perlin(x::Float64, y::Float64, z::Float64)
+
+	
+end
 
 """
 Returns 3D matrix of size [rows,columns,pages]. The AMBIENT_ENERGY page is set 
@@ -92,7 +121,12 @@ end
 #                           CREATURE RULES                                    #
 ###############################################################################
 
-
+"""
+Given a creature, calculates the metabolic rate of that creature
+"""
+function calculate_metabolism(creature::Array{Int,1})
+	return METABOLISM_CONSTANT;
+end
 
 """
 Given a creature, calculates the movement cost of movement for that creature
@@ -117,6 +151,12 @@ function calculate_traits(creature::Array{Int,1})
 	creature[FEAR] = bound(creature[FEAR], MIN_FEAR, MAX_FEAR);
 	creature[GREED] = bound(creature[GREED], MIN_GREED, MAX_GREED);
 	creature[SOCIAL] = bound(creature[SOCIAL], MIN_SOCIAL, MAX_SOCIAL);
+
+	# Set the creature's lifetime to 0
+	creature[LIFETIME] = 0;
+
+	# Set the creature's metabolism
+	creature[METABOLISM] = calculate_metabolism(creature);
 
 	# Calculate movement cost
 	creature[MOVEMENT_TIME] = bound(creature[MOVEMENT_TIME], MIN_MOVEMENT_TIME, MAX_MOVEMENT_TIME);
@@ -217,6 +257,9 @@ function update_creature_values(creature::Array{Int,1})
 	# Create a copy of the creature
 	updated_creature = copy(creature);
 
+	# Iterate the creature's life by 1
+	updated_creature[LIFETIME] += 1;
+
 	# Set the cell to "Has Acted", so it can't perform an
 	# action until the next round
 	updated_creature[HAS_ACTED] = 1;	
@@ -227,7 +270,7 @@ function update_creature_values(creature::Array{Int,1})
 		updated_creature[STORED_ENERGY] += creature[AMBIENT_ENERGY];
 
 		# Subtract the metabolic requirement of the creature from its current energy store
-		updated_creature[STORED_ENERGY] -= creature[METABOLISM];
+		updated_creature[STORED_ENERGY] -= int(1/creature[METABOLISM] * creature[LIFETIME]);
 
 		# if the creature can move at all
 		if creature[MOVEMENT_TIME] < MAX_MOVEMENT_TIME

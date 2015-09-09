@@ -70,34 +70,40 @@ ATTRIBUTE - energy capacity.
 	Range: 0 to 2^63 - 1 (Int64 max value)
 	Desc: how much energy a creature can hold until it is "full" and will not absorb/consume any longer
 
-11:
+10:
 VALUE - stored energy
 	Range: 0 to energy capacity
 	Desc: how much energy the creature has stored. A value of 0 means the creature will disappear from the grid
 
-12:
+11:
 VALUE - movement cooldown
 	Range: 0 to movement speed
 	Desc: how many turns until the creature can move. If 0, then the creature can move this turn. After a move this cooldown resets to the maximum value. Every cycle of the grid this number is decremented
 
-13:
+12:
 VALUE - movement boolean
 	Range: 0 or 1
 	Desc: this boolean value is set to true after the movement cooldown has been reset, and set to true once the movement cooldown reaches 0.
 
-14:
-VALUE - metabolism
+13:
+VALUE - METABOLISM
 	Range: 1 to 2^63 - 1 (Int64 max value)
 	Desc: How much energy it costs each creature regardless of other actions.
 	      Subtracted from the creature energy capacity after every turn. This
 	      value is dependent on the creature's movement speed, attack
 	      capability, and vision range plus a constant
 
-15:
+14:
 VALUE - MOVEMENT_COST
 	Range: 1 to 2^63 - 1 (Int64 max value)
 	Desc: How much enrgy it costs the creature to move. This value is
 	      calculated by the 'calculate_movement_cost' function.
+
+15:
+VALUE - LIFETIME
+	Range: 0 to 2^63 - 1 (Int64 max value)
+	Desc: How many iterations of the simulation the creature has survived.
+	      This determines the metabolism rate of energy loss.
 
 
 16:
@@ -136,11 +142,11 @@ MOVEMENT_COOLDOWN = 11;
 HAS_MOVED = 12;
 METABOLISM = 13;
 MOVEMENT_COST = 14;
-
-HAS_ACTED = 15;
+LIFETIME = 15;
+HAS_ACTED = 16;
 
 # Depth of grid. Sum of number of environments, attributes, and values
-GRID_DEPTH = 15;
+GRID_DEPTH = 16;
 
 
 
@@ -184,8 +190,9 @@ MAX_MOVEMENT_TIME = 1000;
 # Divisor of the normal distribution of mutation
 MUTATION_SCALE = 2;
 
-# Metabolism constant. This constant will be subtracted from all creatures every turn
-METABOLISM_CONSTANT = 2;
+# Metabolism constant used to determine how much is subtracted from the
+# creature's stored energy per turn
+METABOLISM_CONSTANT = 10;
 
 # How similar creatures must be to mate (similarity determined by similarity 
 # function)
