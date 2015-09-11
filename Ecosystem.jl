@@ -79,13 +79,13 @@ Params:
 	min: the minimum ambient energy value
 	max: the maximum ambient energy value
 """
-function generate_ambient_energy(step::Float64, min::Int, max:Int)
+function generate_ambient_energy(step::Float64, min::Int, max::Int)
 	map = int(zeros(HEIGHT, WIDTH));
 
 	# Loop through all 
 	for r = 1:HEIGHT
 		for c = 1:WIDTH
-			map[r,c] = perlin()
+			map[r,c] = perlin(r,c,step);
 		end
 	end
 
@@ -98,7 +98,7 @@ Perlin noise implementation
 """
 function perlin(x::Float64, y::Float64, z::Float64)
 
-	
+	return Inf;
 end
 
 """
@@ -125,7 +125,8 @@ end
 Given a creature, calculates the metabolic rate of that creature
 """
 function calculate_metabolism(creature::Array{Int,1})
-	return METABOLISM_CONSTANT;
+	metabolism = int(creature[ATTACK_CAPABILITY] + 1/creature[MOVEMENT_TIME]);
+	return metabolism;
 end
 
 """
@@ -155,15 +156,18 @@ function calculate_traits(creature::Array{Int,1})
 	# Set the creature's lifetime to 0
 	creature[LIFETIME] = 0;
 
-	# Set the creature's metabolism
-	creature[METABOLISM] = calculate_metabolism(creature);
-
 	# Calculate movement cost
 	creature[MOVEMENT_TIME] = bound(creature[MOVEMENT_TIME], MIN_MOVEMENT_TIME, MAX_MOVEMENT_TIME);
 	creature[MOVEMENT_COST] = calculate_movement_cost(creature);
 
-	# Bound necessary values
+	# Bound mating energy
 	creature[MATING_ENERGY] = bound(creature[MATING_ENERGY], 1, MAX_NUM);
+
+	# Set the creature's metabolism and lifespan
+	creature[METABOLISM] = calculate_metabolism(creature);
+
+	# Bound lifespan
+	creature[LIFESPAN_MULTIPLIER] = bound(creature[LIFESPAN_MULTIPLIER], 0, MAX_NUM);
 
 	return creature;
 end
@@ -214,10 +218,13 @@ function spontaneous_life(cell::Array{Int,1}, energy::Int)
 	new_cell[FEAR] = 5;
 	new_cell[GREED] = 5;
 	new_cell[SOCIAL] = 5;
+
+	# Set some important default values
 	new_cell[STORED_ENERGY] = SPONTANEOUS_LIFE_ENERGY;
 	new_cell[ENERGY_CAPACITY] = energy;
 	new_cell[MATING_ENERGY] = SPONTANEOUS_LIFE_MATING_ENERGY;
-	
+	new_cell[LIFESPAN_MULTIPLIER] = 0;
+
 	# Calculate remaining traits
 	new_cell = mutate(new_cell);
 
@@ -270,7 +277,7 @@ function update_creature_values(creature::Array{Int,1})
 		updated_creature[STORED_ENERGY] += creature[AMBIENT_ENERGY];
 
 		# Subtract the metabolic requirement of the creature from its current energy store
-		updated_creature[STORED_ENERGY] -= int(1/creature[METABOLISM] * creature[LIFETIME]);
+		updated_creature[STORED_ENERGY] -= int(creature[METABOLISM] + creature[LIFESPAN_MULTIPLIER]);
 
 		# if the creature can move at all
 		if creature[MOVEMENT_TIME] < MAX_MOVEMENT_TIME

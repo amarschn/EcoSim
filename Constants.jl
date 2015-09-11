@@ -71,42 +71,49 @@ ATTRIBUTE - energy capacity.
 	Desc: how much energy a creature can hold until it is "full" and will not absorb/consume any longer
 
 10:
+ATTRIBUTE - LIFESPAN_MULTIPLIER
+	Range: 0 to 2^63 - 1 (Int64 max value)
+	Desc: This value is multiplied by the calculated metabolism of the
+	      creature to determine how much the age of the creature affects
+	      its metabolism. Initially set to 1.
+
+11:
 VALUE - stored energy
 	Range: 0 to energy capacity
 	Desc: how much energy the creature has stored. A value of 0 means the creature will disappear from the grid
 
-11:
+12:
 VALUE - movement cooldown
 	Range: 0 to movement speed
 	Desc: how many turns until the creature can move. If 0, then the creature can move this turn. After a move this cooldown resets to the maximum value. Every cycle of the grid this number is decremented
 
-12:
+13:
 VALUE - movement boolean
 	Range: 0 or 1
 	Desc: this boolean value is set to true after the movement cooldown has been reset, and set to true once the movement cooldown reaches 0.
 
-13:
+14:
 VALUE - METABOLISM
-	Range: 1 to 2^63 - 1 (Int64 max value)
+	Range: 0 to 2^63 - 1 (Int64 max value)
 	Desc: How much energy it costs each creature regardless of other actions.
 	      Subtracted from the creature energy capacity after every turn. This
 	      value is dependent on the creature's movement speed, attack
 	      capability, and vision range plus a constant
 
-14:
+15:
 VALUE - MOVEMENT_COST
 	Range: 1 to 2^63 - 1 (Int64 max value)
 	Desc: How much enrgy it costs the creature to move. This value is
 	      calculated by the 'calculate_movement_cost' function.
 
-15:
+16:
 VALUE - LIFETIME
 	Range: 0 to 2^63 - 1 (Int64 max value)
 	Desc: How many iterations of the simulation the creature has survived.
 	      This determines the metabolism rate of energy loss.
 
 
-16:
+17:
 VALUE - HAS_ACTED
 	Range: 0 to 1
 	Desc: Determines whether creature has acted or not
@@ -135,18 +142,19 @@ MOVEMENT_TIME = 6;
 MATING_ENERGY = 7;
 ATTACK_CAPABILITY = 8;
 ENERGY_CAPACITY= 9;
+LIFESPAN_MULTIPLIER = 10;
 
 # Values
-STORED_ENERGY = 10;
-MOVEMENT_COOLDOWN = 11;
-HAS_MOVED = 12;
-METABOLISM = 13;
-MOVEMENT_COST = 14;
-LIFETIME = 15;
-HAS_ACTED = 16;
+STORED_ENERGY = 11;
+MOVEMENT_COOLDOWN = 12;
+HAS_MOVED = 13;
+METABOLISM = 14;
+MOVEMENT_COST = 15;
+LIFETIME = 16;
+HAS_ACTED = 17;
 
 # Depth of grid. Sum of number of environments, attributes, and values
-GRID_DEPTH = 16;
+GRID_DEPTH = 17;
 
 
 
@@ -165,7 +173,8 @@ ATTRIBUTE_LIST = [FEAR,
                   MOVEMENT_TIME,
                   MATING_ENERGY,
                   ATTACK_CAPABILITY,
-                  ENERGY_CAPACITY];
+                  ENERGY_CAPACITY,
+                  LIFESPAN_MULTIPLIER];
 
 # Arbitrary maximum number
 MAX_NUM = 1000000;
@@ -187,16 +196,19 @@ MIN_MOVEMENT_TIME = 1;
 # This is a movement time that indicates no movement at all by the creature
 MAX_MOVEMENT_TIME = 1000;
 
-# Divisor of the normal distribution of mutation
+# Divisor of the normal distribution of mutation. Smaller this number is the
+# more mutation there will be
 MUTATION_SCALE = 2;
 
 # Metabolism constant used to determine how much is subtracted from the
-# creature's stored energy per turn
-METABOLISM_CONSTANT = 10;
+# creature's stored energy per turn. Energy lost per turn is proportional
+# to the metabolism constant
+METABOLISM_CONSTANT = 12;
 
 # How similar creatures must be to mate (similarity determined by similarity 
 # function)
 MATING_SIMILARITY = 0.2;
+
 
 # How much energy it takes to create spontaneous life
 SPONTANEOUS_LIFE_THRESHOLD = 70;
